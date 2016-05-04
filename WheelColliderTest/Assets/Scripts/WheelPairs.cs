@@ -6,5 +6,5 @@ public class WheelPairs
 {
     public WheelCollider leftWheelCollider, rightWheelCollider;
     public Transform leftWheelModel, rightWheelModel;
-    public bool motor, steer;
+    public bool steer;
 }
