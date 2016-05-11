@@ -30,7 +30,12 @@ public class VehicleController : MonoBehaviour
         handbrakeTorque = float.MaxValue;
         _rb = GetComponent<Rigidbody>();
         _currentTorque = _currentTorque - (tractionControl * _currentTorque);
-        _antiRoll = 5000;//wheelPairList[0].rightWheelCollider.suspensionSpring.spring;
+        _antiRoll = wheelPairList[0].rightWheelCollider.suspensionSpring.spring;
+        foreach (var wheelP in wheelPairList)
+        {
+            wheelP.leftWheelCollider.ConfigureVehicleSubsteps(5,12,15);
+            wheelP.rightWheelCollider.ConfigureVehicleSubsteps(5,12,15);
+        }
     }
 
     protected void Update()
@@ -67,9 +72,12 @@ public class VehicleController : MonoBehaviour
 
             var antiRollForce = (travelL - travelR) * _antiRoll;
 
-            if (groundedL) _rb.AddForceAtPosition(wheelP.leftWheelCollider.transform.up * -antiRollForce, wheelP.leftWheelCollider.transform.position);
-            if (groundedR) _rb.AddForceAtPosition(wheelP.rightWheelCollider.transform.up * antiRollForce, wheelP.rightWheelCollider.transform.position);
-        }
+            if (groundedL || groundedR)
+            {
+                _rb.AddForceAtPosition(wheelP.leftWheelCollider.transform.up * -antiRollForce, wheelP.leftWheelCollider.transform.position);
+                _rb.AddForceAtPosition(wheelP.rightWheelCollider.transform.up * antiRollForce, wheelP.rightWheelCollider.transform.position);
+            }
+        }   
     }
 
     protected void TractionControl()
@@ -161,8 +169,7 @@ public class VehicleController : MonoBehaviour
 
     protected void ApplyDrive()
     {
-        float thrustTorque = _accelInput * (_currentTorque / 4);
-        print(thrustTorque);
+        float thrustTorque = _accelInput * (_currentTorque / 4) * 10;
         foreach (var wheelP in wheelPairList)
         {
             wheelP.rightWheelCollider.motorTorque = thrustTorque;
