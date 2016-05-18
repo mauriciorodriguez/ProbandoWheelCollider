@@ -5,6 +5,5 @@ public class WheelPair
 {   
     public GameObject leftWheel, rightWheel;
     public bool hasContactSurface { get; private set; }
-
-    
+    public bool useMotor, steer;    
 }
