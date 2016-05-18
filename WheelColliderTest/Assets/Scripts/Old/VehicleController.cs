@@ -46,7 +46,7 @@ public class VehicleController : MonoBehaviour
     protected void FixedUpdate()
     {
         ClampImputValues();
-        AntiRollBar();
+        //AntiRollBar();
 
         ApplySteering();
         SteerHelper();
@@ -169,7 +169,7 @@ public class VehicleController : MonoBehaviour
 
     protected void ApplyDrive()
     {
-        float thrustTorque = _accelInput * (_currentTorque / 4) * 10;
+        float thrustTorque = _accelInput * (_currentTorque / 4);
         foreach (var wheelP in wheelPairList)
         {
             wheelP.rightWheelCollider.motorTorque = thrustTorque;

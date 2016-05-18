@@ -120,8 +120,8 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 494190}
-  - 114: {fileID: 11475042}
   - 54: {fileID: 5422394}
+  - 114: {fileID: 11475042}
   - 114: {fileID: 11492484}
   m_Layer: 0
   m_Name: CAR(Susp Script)
@@ -823,14 +823,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speedText: {fileID: 0}
   wheelRadius: 0.25
+  downForce: 0
+  topSpeed: 0
+  friction: 0
   centerOfMass: {fileID: 428814}
   wheelMeshList:
   - {fileID: 473120}
   - {fileID: 440348}
   - {fileID: 430466}
   - {fileID: 441290}
-  maxAngleSteer: 30
+  maxSteerForce: 0
   maxForce: 500
+  brakeForce: 0
 --- !u!114 &11492484
 MonoBehaviour:
   m_ObjectHideFlags: 1

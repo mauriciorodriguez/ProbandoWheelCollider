@@ -74,10 +74,13 @@ public abstract class Vehicle : MonoBehaviour
     }*/
 
     public Text speedText;
-    public float wheelRadius, downForce;
+    public float wheelRadius, downForce, topSpeed;
+    [Tooltip("1 sin friccion")]
+    [Range(0, 1)]
+    public float friction;
     public Transform centerOfMass;
     public List<Transform> wheelMeshList;
-    public float maxAngleSteer, maxForce;
+    public float maxSteerForce, maxForce, brakeForce;
 
     protected Rigidbody _rb;
 
@@ -105,25 +108,51 @@ public abstract class Vehicle : MonoBehaviour
 
     public void Move(float accelInput, float brakeInput, float handbrakeInput, float steerInput)
     {
-        var steerAngle = steerInput * maxAngleSteer;
+        var steerAngle = steerInput * maxSteerForce;
         var forwardForce = accelInput * maxForce;
-        ApplyDrive(forwardForce);
+        var brakeF = brakeInput * brakeForce;
+        ApplyDrive(forwardForce, brakeF);
         ApplySteer(steerAngle);
         AddDownForce();
+        Drag(accelInput, brakeInput);
+        CapSpeed();
+    }
+
+    protected void Drag(float a, float b)
+    {
+        if (a == 0 && b == 0)
+        {
+            var vel = _rb.velocity;
+            vel.x *= friction;
+            vel.z *= friction;
+            _rb.velocity = vel;
+            _rb.angularVelocity *= friction;
+        }
     }
 
     protected void AddDownForce()
     {
-        _rb.AddForce(-transform.up * downForce * _rb.velocity.magnitude);
+        _rb.AddForce(-Vector3.up * downForce * _rb.velocity.magnitude);
     }
 
     protected void ApplySteer(float steerAngle)
     {
-        _rb.AddRelativeTorque(0, steerAngle, 0);
+        _rb.AddTorque(0,steerAngle,0);
     }
 
-    protected void ApplyDrive(float forwardForce)
+    protected void ApplyDrive(float forwardForce, float brake)
     {
-        _rb.AddRelativeForce(0, 0, forwardForce);
+        if (brake < 0)
+        {
+            _rb.AddRelativeForce(0, 0, brake/4);
+        }
+        else {
+            _rb.AddRelativeForce(0, 0, forwardForce);
+        }
+    }
+
+    protected void CapSpeed()
+    {
+        if (_rb.velocity.magnitude > topSpeed) _rb.velocity = topSpeed * _rb.velocity.normalized;
     }
 }
