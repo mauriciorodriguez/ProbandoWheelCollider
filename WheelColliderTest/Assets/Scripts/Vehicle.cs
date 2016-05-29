@@ -75,6 +75,7 @@ public abstract class Vehicle : MonoBehaviour
 
     public Text speedText;
     public float wheelRadius, downForce, topSpeed;
+    public Transform leftTurnWheelPosition, rightWheelTurnPosition;
     [Tooltip("1 sin friccion")]
     [Range(0, 1)]
     public float friction;
@@ -83,6 +84,7 @@ public abstract class Vehicle : MonoBehaviour
     public float maxSteerForce, maxForce, brakeForce;
 
     protected Rigidbody _rb;
+    protected float _velZ;
 
     protected void Start()
     {
@@ -92,7 +94,8 @@ public abstract class Vehicle : MonoBehaviour
 
     protected void Update()
     {
-        speedText.text = _rb.velocity.magnitude + "";
+        _velZ = transform.InverseTransformDirection(_rb.velocity).z;
+        speedText.text = _velZ + "";
         UpdateTyres();
     }
 
@@ -137,14 +140,25 @@ public abstract class Vehicle : MonoBehaviour
 
     protected void ApplySteer(float steerAngle)
     {
-        _rb.AddTorque(0,steerAngle,0);
+        if (_rb.velocity.magnitude > 1)
+        {
+            if (steerAngle > 0)
+            {
+                _rb.AddForceAtPosition(leftTurnWheelPosition.right * maxSteerForce, leftTurnWheelPosition.position);
+            }
+            else if (steerAngle < 0)
+            {
+                _rb.AddForceAtPosition(-rightWheelTurnPosition.right * maxSteerForce, rightWheelTurnPosition.position);
+
+            }
+        }
     }
 
     protected void ApplyDrive(float forwardForce, float brake)
     {
         if (brake < 0)
         {
-            _rb.AddRelativeForce(0, 0, brake/4);
+            _rb.AddRelativeForce(0, 0, brake / 4);
         }
         else {
             _rb.AddRelativeForce(0, 0, forwardForce);
