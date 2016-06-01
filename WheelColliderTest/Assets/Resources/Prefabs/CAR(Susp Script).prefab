@@ -516,8 +516,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 124380}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 80, y: -61.28, z: -368}
+  m_LocalRotation: {x: 0, y: -0.91919166, z: 0, w: -0.3938106}
+  m_LocalPosition: {x: -230.62538, y: -59.9, z: -320.94547}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 464636}
@@ -760,7 +760,7 @@ Rigidbody:
   serializedVersion: 2
   m_Mass: 1000
   m_Drag: 1
-  m_AngularDrag: 1
+  m_AngularDrag: 5
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
@@ -852,18 +852,23 @@ MonoBehaviour:
   speedText: {fileID: 0}
   wheelRadius: 0.25
   downForce: 200
-  topSpeed: 50
+  topSpeed: 70
   leftTurnWheelPosition: {fileID: 414414}
   rightWheelTurnPosition: {fileID: 413724}
-  friction: 0.95
+  friction: 0.991
   centerOfMass: {fileID: 428814}
   wheelMeshList:
   - {fileID: 473120}
   - {fileID: 440348}
   - {fileID: 430466}
   - {fileID: 441290}
-  maxSteerForce: 2000
-  maxForce: 70000
+  wheelSuspensionList:
+  - {fileID: 11497226}
+  - {fileID: 11408366}
+  - {fileID: 11467500}
+  - {fileID: 11461682}
+  maxSteerForce: 6000
+  maxForce: 200000
   brakeForce: 20000
 --- !u!114 &11492484
 MonoBehaviour:

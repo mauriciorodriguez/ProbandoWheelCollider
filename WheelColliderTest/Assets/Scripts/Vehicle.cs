@@ -81,6 +81,7 @@ public abstract class Vehicle : MonoBehaviour
     public float friction;
     public Transform centerOfMass;
     public List<Transform> wheelMeshList;
+    public List<Suspension> wheelSuspensionList;
     public float maxSteerForce, maxForce, brakeForce;
 
     protected Rigidbody _rb;
@@ -102,10 +103,10 @@ public abstract class Vehicle : MonoBehaviour
     protected void UpdateTyres()
     {
         /*var angularVelocity = _rb.angularVelocity.magnitude;
-        var rpm = angularVelocity / (2 * Mathf.PI) * 60;
+        var rpm = angularVelocity / (2 * Mathf.PI);
         foreach (var wheel in wheelMeshList)
         {
-            wheel.Rotate(rpm*Time.deltaTime, 0, 0);
+            wheel.localRotation = Quaternion.Euler(rpm*Time.deltaTime,0,0);
         }*/
     }
 
@@ -113,11 +114,18 @@ public abstract class Vehicle : MonoBehaviour
     {
         var steerAngle = steerInput * maxSteerForce;
         var forwardForce = accelInput * maxForce;
-        var brakeF = brakeInput * brakeForce;
-        ApplyDrive(forwardForce, brakeF);
-        ApplySteer(steerAngle);
+        var brakeForce = brakeInput * this.brakeForce;
+        foreach (var wheel in wheelSuspensionList)
+        {
+            if (wheel.IsGrounded())
+            {
+                ApplyDrive(forwardForce, brakeForce);
+                ApplySteer(steerAngle);
+                Drag(accelInput, brakeInput);
+                break;
+            }
+        }        
         AddDownForce();
-        Drag(accelInput, brakeInput);
         CapSpeed();
     }
 
@@ -154,11 +162,11 @@ public abstract class Vehicle : MonoBehaviour
         }
     }
 
-    protected void ApplyDrive(float forwardForce, float brake)
+    protected void ApplyDrive(float forwardForce, float brakeF)
     {
-        if (brake < 0)
+        if (brakeF < 0)
         {
-            _rb.AddRelativeForce(0, 0, brake / 4);
+            _rb.AddRelativeForce(0, 0, brakeF / 4);
         }
         else {
             _rb.AddRelativeForce(0, 0, forwardForce);
