@@ -112,33 +112,38 @@ public abstract class Vehicle : MonoBehaviour
 
     public void Move(float accelInput, float brakeInput, float handbrakeInput, float steerInput)
     {
-        var steerAngle = steerInput * maxSteerForce;
+        var steerForce = steerInput * maxSteerForce;
         var forwardForce = accelInput * maxForce;
         var brakeForce = brakeInput * this.brakeForce;
         foreach (var wheel in wheelSuspensionList)
         {
             if (wheel.IsGrounded())
             {
+                //CalculateSteerForceWithVelocity(out steerForce,steerInput);
                 ApplyDrive(forwardForce, brakeForce);
-                ApplySteer(steerAngle);
-                Drag(accelInput, brakeInput);
+                ApplySteer(steerForce, steerInput);
                 break;
             }
-        }        
+        }
+        Drag(accelInput, brakeInput);
         AddDownForce();
         CapSpeed();
     }
 
+    protected void CalculateSteerForceWithVelocity(out float sf, float si)
+    {
+        var a = (_velZ / topSpeed);
+        sf = (a * maxSteerForce);
+        print(sf);
+    }
+
     protected void Drag(float a, float b)
     {
-        if (a == 0 && b == 0)
-        {
-            var vel = _rb.velocity;
-            vel.x *= friction;
-            vel.z *= friction;
-            _rb.velocity = vel;
-            _rb.angularVelocity *= friction;
-        }
+        var vel = _rb.velocity;
+        vel.x *= friction;
+        vel.z *= friction;
+        _rb.velocity = vel;
+        _rb.angularVelocity *= friction;
     }
 
     protected void AddDownForce()
@@ -146,9 +151,8 @@ public abstract class Vehicle : MonoBehaviour
         _rb.AddForce(-Vector3.up * downForce * _rb.velocity.magnitude);
     }
 
-    protected void ApplySteer(float steerAngle)
-    {
-        if (_rb.velocity.magnitude > 1)
+    protected void ApplySteer(float steerAngle, float steerInp)
+    {if (_velZ > 1)
         {
             if (steerAngle > 0)
             {
@@ -157,7 +161,6 @@ public abstract class Vehicle : MonoBehaviour
             else if (steerAngle < 0)
             {
                 _rb.AddForceAtPosition(-rightWheelTurnPosition.right * maxSteerForce, rightWheelTurnPosition.position);
-
             }
         }
     }

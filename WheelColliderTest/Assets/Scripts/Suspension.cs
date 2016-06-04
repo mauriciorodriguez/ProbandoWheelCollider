@@ -20,7 +20,7 @@ public class Suspension : MonoBehaviour
     private void FixedUpdate()
     {
         RaycastHit hit;
-        if (Physics.Raycast(transform.position,-transform.up, out hit, restLenght+_vehicleScript.wheelRadius))
+        if (Physics.Raycast(transform.position, -transform.up, out hit, restLenght + _vehicleScript.wheelRadius))
         {
             previousLength = currentLength;
             currentLength = restLenght - (hit.distance - _vehicleScript.wheelRadius);
@@ -28,6 +28,7 @@ public class Suspension : MonoBehaviour
             springForce = springConstant * currentLength;
             damperForce = damperConstant * springVelocity;
             _rb.AddForceAtPosition(transform.up * (springForce + damperForce), transform.position);
+            print(hit.collider.gameObject);
             if (hit.collider.gameObject.layer == K.LAYER_GROUND)
             {
                 _isGrounded = true;
@@ -36,6 +37,10 @@ public class Suspension : MonoBehaviour
             {
                 _isGrounded = false;
             }
+        }
+        else
+        {
+            _isGrounded = false;
         }
     }
 
