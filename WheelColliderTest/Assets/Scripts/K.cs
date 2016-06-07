@@ -7,4 +7,6 @@
     public const int LAYER_GROUND = 8;
 
     public const float MIN_FORCE_MULTIPLIER = .2f;
+
+    public const float KPH_TO_MPS_MULTIPLIER = 3.6f;
 }

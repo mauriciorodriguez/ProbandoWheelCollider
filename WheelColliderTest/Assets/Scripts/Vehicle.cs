@@ -96,7 +96,7 @@ public abstract class Vehicle : MonoBehaviour
 
     protected void Update()
     {
-        speedText.text = (int)_velZ + "";
+        speedText.text = (int)(_velZ * K.KPH_TO_MPS_MULTIPLIER) + "";
 
         UpdateTyres();
     }
@@ -209,9 +209,9 @@ public abstract class Vehicle : MonoBehaviour
 
     protected void CapSpeed()
     {
-        if (_velZ > topSpeed)
+        if (_velZ > (topSpeed / K.KPH_TO_MPS_MULTIPLIER))
         {
-            _rb.velocity = topSpeed * _rb.velocity.normalized;
+            _rb.velocity = (topSpeed / K.KPH_TO_MPS_MULTIPLIER) * _rb.velocity.normalized;
             _velZ = transform.InverseTransformDirection(_rb.velocity).z;
         }
     }
