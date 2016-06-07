@@ -86,6 +86,7 @@ public abstract class Vehicle : MonoBehaviour
 
     protected Rigidbody _rb;
     protected float _velZ;
+    protected bool _isGrounded;
 
     protected void Start()
     {
@@ -95,8 +96,8 @@ public abstract class Vehicle : MonoBehaviour
 
     protected void Update()
     {
-        _velZ = transform.InverseTransformDirection(_rb.velocity).z;
-        speedText.text = _velZ + "";
+        speedText.text = (int)_velZ + "";
+
         UpdateTyres();
     }
 
@@ -112,15 +113,18 @@ public abstract class Vehicle : MonoBehaviour
 
     public void Move(float accelInput, float brakeInput, float handbrakeInput, float steerInput)
     {
+        _velZ = transform.InverseTransformDirection(_rb.velocity).z;
         var steerForce = steerInput * maxSteerForce;
         var forwardForce = accelInput * maxForce;
         var brakeForce = brakeInput * this.brakeForce;
         foreach (var wheel in wheelSuspensionList)
         {
+            _isGrounded = false;
             if (wheel.IsGrounded())
             {
+                _isGrounded = true;
                 //CalculateSteerForceWithVelocity(out steerForce,steerInput);
-                ApplyDrive(forwardForce, brakeForce);
+                ApplyDrive(forwardForce, accelInput, brakeForce);
                 ApplySteer(steerForce, steerInput);
                 break;
             }
@@ -139,9 +143,19 @@ public abstract class Vehicle : MonoBehaviour
 
     protected void Drag(float a, float b)
     {
+        float tempFriction;
+        if (_isGrounded)
+        {
+            tempFriction = friction;
+        }
+        else
+        {
+            tempFriction = friction * .1f;
+        }
+
         var vel = _rb.velocity;
-        vel.x *= friction;
-        vel.z *= friction;
+        vel.x *= tempFriction;
+        vel.z *= tempFriction;
         _rb.velocity = vel;
         _rb.angularVelocity *= friction;
     }
@@ -151,33 +165,54 @@ public abstract class Vehicle : MonoBehaviour
         _rb.AddForce(-Vector3.up * downForce * _rb.velocity.magnitude);
     }
 
-    protected void ApplySteer(float steerAngle, float steerInp)
-    {if (_velZ > 1)
+    protected void ApplySteer(float steerF, float steerI)
+    {
+        var tempForce = Mathf.Abs(steerF * (Mathf.Floor(_velZ) / topSpeed));
+        if (tempForce < maxSteerForce * K.MIN_FORCE_MULTIPLIER && steerI != 0) tempForce = maxSteerForce * K.MIN_FORCE_MULTIPLIER;
+        if (_velZ > 1)
         {
-            if (steerAngle > 0)
+            if (steerI > 0)
             {
-                _rb.AddForceAtPosition(leftTurnWheelPosition.right * maxSteerForce, leftTurnWheelPosition.position);
+                _rb.AddForceAtPosition(leftTurnWheelPosition.right * tempForce, leftTurnWheelPosition.position, ForceMode.Acceleration);
             }
-            else if (steerAngle < 0)
+            else if (steerI < 0)
             {
-                _rb.AddForceAtPosition(-rightWheelTurnPosition.right * maxSteerForce, rightWheelTurnPosition.position);
+                _rb.AddForceAtPosition(-rightWheelTurnPosition.right * tempForce, rightWheelTurnPosition.position, ForceMode.Acceleration);
+            }
+        }
+        else if (_velZ < -1)
+        {
+            if (steerI < 0)
+            {
+                _rb.AddForceAtPosition(leftTurnWheelPosition.right * tempForce, leftTurnWheelPosition.position, ForceMode.Acceleration);
+            }
+            else if (steerI > 0)
+            {
+                _rb.AddForceAtPosition(-rightWheelTurnPosition.right * tempForce, rightWheelTurnPosition.position, ForceMode.Acceleration);
             }
         }
     }
 
-    protected void ApplyDrive(float forwardForce, float brakeF)
+    protected void ApplyDrive(float forwardForce, float accI, float brakeF)
     {
+        //print("VelZ:" + Mathf.Floor(_velZ) + " / topSpeed:" + topSpeed + " = " + (Mathf.Floor(_velZ) / topSpeed));
+        var tempForce = forwardForce * (Mathf.Floor(_velZ) / topSpeed);
+        if (tempForce < maxForce * K.MIN_FORCE_MULTIPLIER && accI > 0) tempForce = maxForce * K.MIN_FORCE_MULTIPLIER;
         if (brakeF < 0)
         {
-            _rb.AddRelativeForce(0, 0, brakeF / 4);
+            _rb.AddRelativeForce(0, 0, brakeF, ForceMode.Acceleration);
         }
         else {
-            _rb.AddRelativeForce(0, 0, forwardForce);
+            _rb.AddRelativeForce(0, 0, tempForce, ForceMode.Acceleration);
         }
     }
 
     protected void CapSpeed()
     {
-        if (_rb.velocity.magnitude > topSpeed) _rb.velocity = topSpeed * _rb.velocity.normalized;
+        if (_velZ > topSpeed)
+        {
+            _rb.velocity = topSpeed * _rb.velocity.normalized;
+            _velZ = transform.InverseTransformDirection(_rb.velocity).z;
+        }
     }
 }

@@ -5,4 +5,6 @@
     public const string INPUT_SPACEBAR = "Jump";
 
     public const int LAYER_GROUND = 8;
+
+    public const float MIN_FORCE_MULTIPLIER = .2f;
 }

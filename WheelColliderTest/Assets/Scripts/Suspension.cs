@@ -28,7 +28,6 @@ public class Suspension : MonoBehaviour
             springForce = springConstant * currentLength;
             damperForce = damperConstant * springVelocity;
             _rb.AddForceAtPosition(transform.up * (springForce + damperForce), transform.position);
-            print(hit.collider.gameObject);
             if (hit.collider.gameObject.layer == K.LAYER_GROUND)
             {
                 _isGrounded = true;
