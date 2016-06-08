@@ -117,19 +117,21 @@ public abstract class Vehicle : MonoBehaviour
         var steerForce = steerInput * maxSteerForce;
         var forwardForce = accelInput * maxForce;
         var brakeForce = brakeInput * this.brakeForce;
+        _rb.drag = K.AIR_DRAG;
         foreach (var wheel in wheelSuspensionList)
         {
             _isGrounded = false;
             if (wheel.IsGrounded())
             {
                 _isGrounded = true;
-                //CalculateSteerForceWithVelocity(out steerForce,steerInput);
-                ApplyDrive(forwardForce, accelInput, brakeForce);
-                ApplySteer(steerForce, steerInput);
+                _rb.drag = 1;
+                //CalculateSteerForceWithVelocity(out steerForce,steerInput); 
                 break;
             }
         }
-        Drag(accelInput, brakeInput);
+        ApplyDrive(forwardForce, accelInput, brakeForce);
+        ApplySteer(steerForce, steerInput);
+        //Drag(accelInput, brakeInput);
         AddDownForce();
         CapSpeed();
     }
@@ -143,7 +145,7 @@ public abstract class Vehicle : MonoBehaviour
 
     protected void Drag(float a, float b)
     {
-        float tempFriction;
+        /*float tempFriction;
         if (_isGrounded)
         {
             tempFriction = friction;
@@ -151,23 +153,24 @@ public abstract class Vehicle : MonoBehaviour
         else
         {
             tempFriction = friction * .1f;
-        }
+        }*/
 
         var vel = _rb.velocity;
-        vel.x *= tempFriction;
-        vel.z *= tempFriction;
+        vel.x *= friction;
+        vel.z *= friction;
         _rb.velocity = vel;
         _rb.angularVelocity *= friction;
     }
 
     protected void AddDownForce()
     {
-        _rb.AddForce(-Vector3.up * downForce * _rb.velocity.magnitude);
+        _rb.AddForce(-Vector3.up * downForce);
     }
 
     protected void ApplySteer(float steerF, float steerI)
     {
-        var tempForce = Mathf.Abs(steerF * (Mathf.Floor(_velZ) / topSpeed));
+        //print("Abs(steerForce):" + Mathf.Abs(steerF) + " * ((Mathf.Floor(_velZ) * 3.6f) / topSpeed):" + ((Mathf.Floor(_velZ) * 3.6f) / topSpeed) + " = " + Mathf.Abs(steerF) * ((Mathf.Floor(_velZ)*3.6f) / topSpeed));
+        var tempForce = Mathf.Abs(steerF) * ((Mathf.Floor(_velZ) * 3.6f) / topSpeed);
         if (tempForce < maxSteerForce * K.MIN_FORCE_MULTIPLIER && steerI != 0) tempForce = maxSteerForce * K.MIN_FORCE_MULTIPLIER;
         if (_velZ > 1)
         {
@@ -200,10 +203,11 @@ public abstract class Vehicle : MonoBehaviour
         if (tempForce < maxForce * K.MIN_FORCE_MULTIPLIER && accI > 0) tempForce = maxForce * K.MIN_FORCE_MULTIPLIER;
         if (brakeF < 0)
         {
-            _rb.AddRelativeForce(0, 0, brakeF, ForceMode.Acceleration);
+            _rb.AddRelativeForce(0, 0, brakeF);
         }
         else {
-            _rb.AddRelativeForce(0, 0, tempForce, ForceMode.Acceleration);
+            if (_isGrounded) _rb.AddRelativeForce(0, 0, tempForce);
+            else _rb.AddRelativeForce(0, 0, tempForce * 1.1f);
         }
     }
 

@@ -6,7 +6,10 @@
 
     public const int LAYER_GROUND = 8;
 
-    public const float MIN_FORCE_MULTIPLIER = .2f;
+    public const float MIN_FORCE_MULTIPLIER = .155f;
 
     public const float KPH_TO_MPS_MULTIPLIER = 3.6f;
+
+    public const float AIR_DRAG = 1.5f;
+    public const float ANGULAR_DRAG = 3;
 }

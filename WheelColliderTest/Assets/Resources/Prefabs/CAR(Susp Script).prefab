@@ -516,8 +516,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 124380}
-  m_LocalRotation: {x: 0, y: -0.65508884, z: 0, w: -0.75555193}
-  m_LocalPosition: {x: -149, y: -56.1, z: -400}
+  m_LocalRotation: {x: 0, y: -0.8538229, z: 0, w: 0.5205637}
+  m_LocalPosition: {x: 41.727314, y: -61.2, z: 367.55276}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 464636}
@@ -759,7 +759,7 @@ Rigidbody:
   m_GameObject: {fileID: 124380}
   serializedVersion: 2
   m_Mass: 1000
-  m_Drag: 0.5
+  m_Drag: 1
   m_AngularDrag: 3
   m_UseGravity: 1
   m_IsKinematic: 0
@@ -805,7 +805,7 @@ MonoBehaviour:
   damperForce: 0
   springConstant: 20000
   damperConstant: 2000
-  restLenght: 0.25
+  restLenght: 0.5
 --- !u!114 &11461682
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -821,7 +821,7 @@ MonoBehaviour:
   damperForce: 0
   springConstant: 20000
   damperConstant: 2000
-  restLenght: 0.25
+  restLenght: 0.5
 --- !u!114 &11467500
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -837,7 +837,7 @@ MonoBehaviour:
   damperForce: 0
   springConstant: 20000
   damperConstant: 2000
-  restLenght: 0.25
+  restLenght: 0.5
 --- !u!114 &11475042
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -851,8 +851,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speedText: {fileID: 0}
   wheelRadius: 0.25
-  downForce: 200
-  topSpeed: 70
+  downForce: 10000
+  topSpeed: 180
   leftTurnWheelPosition: {fileID: 414414}
   rightWheelTurnPosition: {fileID: 413724}
   friction: 0.95
@@ -867,9 +867,9 @@ MonoBehaviour:
   - {fileID: 11408366}
   - {fileID: 11467500}
   - {fileID: 11461682}
-  maxSteerForce: 10000
-  maxForce: 175000
-  brakeForce: 20000
+  maxSteerForce: 10
+  maxForce: 205000
+  brakeForce: 10000
 --- !u!114 &11492484
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -896,7 +896,7 @@ MonoBehaviour:
   damperForce: 0
   springConstant: 20000
   damperConstant: 2000
-  restLenght: 0.25
+  restLenght: 0.5
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
