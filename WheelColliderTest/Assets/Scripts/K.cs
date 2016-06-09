@@ -12,4 +12,6 @@
 
     public const float AIR_DRAG = 1.5f;
     public const float ANGULAR_DRAG = 3;
+
+    public const float TRAIL_WHEEL_START_SPEED = 50;
 }
